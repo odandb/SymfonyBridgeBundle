@@ -12,6 +12,7 @@
 namespace LightSaml\SymfonyBridgeBundle\Factory;
 
 use LightSaml\Credential\CredentialInterface;
+use LightSaml\Store\Credential\CompositeCredentialStore;
 use LightSaml\Store\Credential\CredentialStoreInterface;
 use LightSaml\Store\Credential\Factory\CredentialFactory;
 use LightSaml\Store\EntityDescriptor\EntityDescriptorStoreInterface;
@@ -19,24 +20,16 @@ use LightSaml\Store\EntityDescriptor\EntityDescriptorStoreInterface;
 class CredentialStoreFactory
 {
     /**
-     * @param EntityDescriptorStoreInterface $idpEntityDescriptorStore
-     * @param EntityDescriptorStoreInterface $spEntityDescriptorStore
-     * @param string                         $ownEntityId
-     * @param CredentialStoreInterface       $ownCredentialStore
-     * @param CredentialInterface[]          $extraCredentials
-     *
-     * @return \LightSaml\Store\Credential\CompositeCredentialStore
+     * @param CredentialInterface[] $extraCredentials
      */
     public static function build(
         EntityDescriptorStoreInterface $idpEntityDescriptorStore,
         EntityDescriptorStoreInterface $spEntityDescriptorStore,
-        $ownEntityId,
+        string $ownEntityId,
         CredentialStoreInterface $ownCredentialStore,
         array $extraCredentials = null
-    ) {
-        $factory = new CredentialFactory();
-
-        return $factory->build(
+    ): CompositeCredentialStore {
+        return (new CredentialFactory())->build(
             $idpEntityDescriptorStore,
             $spEntityDescriptorStore,
             $ownCredentialStore->getByEntityId($ownEntityId),

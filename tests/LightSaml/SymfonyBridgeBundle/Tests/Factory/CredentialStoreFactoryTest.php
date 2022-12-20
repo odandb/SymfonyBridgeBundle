@@ -7,22 +7,24 @@ use LightSaml\Store\Credential\CredentialStoreInterface;
 use LightSaml\Store\EntityDescriptor\EntityDescriptorStoreInterface;
 use LightSaml\SymfonyBridgeBundle\Factory\CredentialStoreFactory;
 use PHPUnit\Framework\TestCase;
+use Prophecy\Argument;
+use Prophecy\PhpUnit\ProphecyTrait;
 
 class CredentialStoreFactoryTest extends TestCase
 {
-    public function test_returns_credential_store()
+    use ProphecyTrait;
+
+    public function test_returns_credential_store(): void
     {
-        $factory = new CredentialStoreFactory();
+        $credentialStore = $this->prophesize(CredentialStoreInterface::class);
+        $credentialStore->getByEntityId(Argument::type('string'))
+            ->willReturn([$this->prophesize(CredentialInterface::class)->reveal()]);
 
-        $credentialStoreMock = $this->getMockBuilder(CredentialStoreInterface::class)->getMock();
-        $credentialStoreMock->method('getByEntityId')
-            ->willReturn([$this->getMockBuilder(CredentialInterface::class)->getMock()]);
-
-        $value = $factory->build(
-            $this->getMockBuilder(EntityDescriptorStoreInterface::class)->getMock(),
-            $this->getMockBuilder(EntityDescriptorStoreInterface::class)->getMock(),
+        $value = CredentialStoreFactory::build(
+            $this->prophesize(EntityDescriptorStoreInterface::class)->reveal(),
+            $this->prophesize(EntityDescriptorStoreInterface::class)->reveal(),
             'own-id',
-            $credentialStoreMock
+            $credentialStore->reveal()
         );
 
         $this->assertInstanceOf(CredentialStoreInterface::class, $value);

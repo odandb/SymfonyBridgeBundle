@@ -18,20 +18,12 @@ use LightSaml\Store\Sso\SsoStateStoreInterface;
 
 class StoreContainer implements StoreContainerInterface
 {
-    /** @var RequestStateStoreInterface */
-    private $requestStateStore;
+    private RequestStateStoreInterface $requestStateStore;
 
-    /** @var IdStoreInterface */
-    private $idStateStore;
+    private IdStoreInterface $idStateStore;
 
-    /** @var SsoStateStoreInterface */
-    private $ssoStateStore;
+    private SsoStateStoreInterface $ssoStateStore;
 
-    /**
-     * @param RequestStateStoreInterface $requestStateStore
-     * @param IdStoreInterface           $idStateStore
-     * @param SsoStateStoreInterface     $ssoStateStore
-     */
     public function __construct(
         RequestStateStoreInterface $requestStateStore,
         IdStoreInterface $idStateStore,
@@ -42,26 +34,17 @@ class StoreContainer implements StoreContainerInterface
         $this->ssoStateStore = $ssoStateStore;
     }
 
-    /**
-     * @return RequestStateStoreInterface
-     */
-    public function getRequestStateStore()
+    public function getRequestStateStore(): RequestStateStoreInterface
     {
         return $this->requestStateStore;
     }
 
-    /**
-     * @return IdStoreInterface
-     */
-    public function getIdStateStore()
+    public function getIdStateStore(): IdStoreInterface
     {
         return $this->idStateStore;
     }
 
-    /**
-     * @return SsoStateStoreInterface
-     */
-    public function getSsoStateStore()
+    public function getSsoStateStore(): SsoStateStoreInterface
     {
         return $this->ssoStateStore;
     }

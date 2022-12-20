@@ -2,6 +2,8 @@
 
 namespace LightSaml\SymfonyBridgeBundle\Tests\Functional;
 
+use LightSaml\SymfonyBridgeBundle\LightSamlSymfonyBridgeBundle;
+use Symfony\Bundle\FrameworkBundle\FrameworkBundle;
 use Symfony\Component\Config\Loader\LoaderInterface;
 use Symfony\Component\HttpKernel\Bundle\BundleInterface;
 use Symfony\Component\HttpKernel\Kernel;
@@ -14,23 +16,19 @@ class TestKernel extends Kernel
      *
      * @return iterable|BundleInterface[] An iterable of bundle instances
      */
-    public function registerBundles()
+    public function registerBundles(): iterable
     {
-        $bundles = [
-            new \Symfony\Bundle\FrameworkBundle\FrameworkBundle(),
-            new \LightSaml\SymfonyBridgeBundle\LightSamlSymfonyBridgeBundle(),
+        return [
+            new FrameworkBundle(),
+            new LightSamlSymfonyBridgeBundle(),
         ];
-
-        return $bundles;
     }
 
     /**
      * Loads the container configuration.
      */
-    public function registerContainerConfiguration(LoaderInterface $loader)
+    public function registerContainerConfiguration(LoaderInterface $loader): void
     {
         $loader->load(__DIR__.'/config.yml');
     }
-
-
 }

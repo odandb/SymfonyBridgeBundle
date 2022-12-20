@@ -1,27 +1,22 @@
 framework:
     secret:          secret
-    test:            ~
-    router:          { resource: "%kernel.root_dir%/routing.yml" }
+    test:            true
+    router:          { resource: "%kernel.project_dir%/tests/LightSaml/SymfonyBridgeBundle/Tests/Functional/routing.yml" }
     csrf_protection: false
-    templating:      false
     session:
-        storage_id:  session.mock_storage
-
-services:
-    session.mock_storage:
-        class: Symfony\Component\HttpFoundation\Session\Storage\MockArraySessionStorage
+        storage_factory_id: session.storage.factory.mock_file
 
 light_saml_symfony_bridge:
     own:
         entity_id: https://localhost/lightSAML/SymfonyBridgeBundle
         credentials:
             -
-                certificate: "%kernel.root_dir%/../../../../../vendor/lightsaml/lightsaml/web/sp/saml.crt"
-                key:         "%kernel.root_dir%/../../../../../vendor/lightsaml/lightsaml/web/sp/saml.key"
+                certificate: "%kernel.project_dir%/tests/resources/web_saml.crt"
+                key:         "%kernel.project_dir%/tests/resources/web_saml.key"
                 password:    ~
     party:
         idp:
             files:
-                - "%kernel.root_dir%/../../../../../vendor/lightsaml/lightsaml/web/sp/openidp.feide.no.xml"
-                - "%kernel.root_dir%/../../../../../vendor/lightsaml/lightsaml/web/sp/localhost-lightsaml-lightsaml-idp.xml"
-                - "%kernel.root_dir%/../../../../../vendor/lightsaml/lightsaml/web/sp/testshib-providers.xml"
+                - "%kernel.project_dir%/tests/resources/openidp.feide.no.xml"
+                - "%kernel.project_dir%/tests/resources/localhost-lightsaml-lightsaml-idp.xml"
+                - "%kernel.project_dir%/tests/resources/testshib-providers.xml"

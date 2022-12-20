@@ -10,14 +10,9 @@ use Symfony\Component\DependencyInjection\ParameterBag\ParameterBag;
 
 class AddMethodCallCompilerPassTest extends TestCase
 {
-    public function test_constructs_with_three_strings()
+    public function test_process_does_nothing_if_container_does_not_have_the_service(): void
     {
-        new AddMethodCallCompilerPass('', '', '');
-    }
-
-    public function test_process_does_nothing_if_container_does_not_have_the_service()
-    {
-        $pass = new AddMethodCallCompilerPass($serviceId = 'service.id', $tagName = 'tag', $methodName = 'method');
+        $pass = new AddMethodCallCompilerPass($serviceId = 'service.id', 'tag', 'method');
         $containerBuilder = new ContainerBuilder(new ParameterBag());
 
         $pass->process($containerBuilder);
@@ -25,7 +20,7 @@ class AddMethodCallCompilerPassTest extends TestCase
         $this->assertFalse($containerBuilder->hasDefinition($serviceId));
     }
 
-    public function test_process_adds_calls_to_service_with_argument_reference_to_all_tagged_services()
+    public function test_process_adds_calls_to_service_with_argument_reference_to_all_tagged_services(): void
     {
         $pass = new AddMethodCallCompilerPass($serviceId = 'service.id', $tagName = 'tag', $methodName = 'method');
         $containerBuilder = new ContainerBuilder(new ParameterBag());

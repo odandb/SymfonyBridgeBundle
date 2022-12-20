@@ -35,7 +35,7 @@ use Symfony\Component\Filesystem\Filesystem;
 
 class FunctionalTest extends WebTestCase
 {
-    protected function setUp()
+    protected function setUp(): void
     {
         parent::setUp();
         $_SERVER['KERNEL_CLASS'] = TestKernel::class;
@@ -44,101 +44,19 @@ class FunctionalTest extends WebTestCase
         $fs->remove(__DIR__.'/cache');
     }
 
-    protected static function getKernelClass()
+    protected static function getKernelClass(): string
     {
         return TestKernel::class;
     }
 
-    public function test_build_container()
+    public function test_build_container(): void
     {
         static::createClient();
-        /** @var BuildContainerInterface $buildContainer */
-        $buildContainer = static::$kernel->getContainer()->get('lightsaml.container.build');
+
+        $buildContainer = static::getContainer()->get('lightsaml.container.build');
         $this->assertInstanceOf(BuildContainerInterface::class, $buildContainer);
-        $this->assertInstanceOf(SystemContainerInterface::class, $buildContainer->getSystemContainer());
-        $this->assertInstanceOf(OwnContainerInterface::class, $buildContainer->getOwnContainer());
-        $this->assertInstanceOf(PartyContainerInterface::class, $buildContainer->getPartyContainer());
-        $this->assertInstanceOf(StoreContainerInterface::class, $buildContainer->getStoreContainer());
-    }
 
-    public function test_system_container() {
-        static::createClient();
-        /** @var BuildContainerInterface $buildContainer */
-        $buildContainer = static::$kernel->getContainer()->get('lightsaml.container.build');
-        $systemContainer = $buildContainer->getSystemContainer();
-        $this->assertInstanceOf(EventDispatcherInterface::class, $systemContainer->getEventDispatcher());
-        $this->assertInstanceOf(LoggerInterface::class, $systemContainer->getLogger());
-        $this->assertInstanceOf(TimeProviderInterface::class, $systemContainer->getTimeProvider());
-    }
-
-    public function test_party_container()
-    {
-        static::createClient();
-        /** @var BuildContainerInterface $buildContainer */
-        $buildContainer = static::$kernel->getContainer()->get('lightsaml.container.build');
-        $partyContainer = $buildContainer->getPartyContainer();
-        $this->assertInstanceOf(EntityDescriptorStoreInterface::class, $partyContainer->getIdpEntityDescriptorStore());
-        $this->assertInstanceOf(EntityDescriptorStoreInterface::class, $partyContainer->getSpEntityDescriptorStore());
-        $this->assertInstanceOf(TrustOptionsStoreInterface::class, $partyContainer->getTrustOptionsStore());
-    }
-
-    public function test_store_container()
-    {
-        static::createClient();
-        /** @var BuildContainerInterface $buildContainer */
-        $buildContainer = static::$kernel->getContainer()->get('lightsaml.container.build');
-        $storeContainer = $buildContainer->getStoreContainer();
-        $this->assertInstanceOf(RequestStateStoreInterface::class, $storeContainer->getRequestStateStore());
-        $this->assertInstanceOf(IdStoreInterface::class, $storeContainer->getIdStateStore());
-        $this->assertInstanceOf(SsoStateStoreInterface::class, $storeContainer->getSsoStateStore());
-    }
-
-    public function test_provider_container()
-    {
-        static::createClient();
-        /** @var BuildContainerInterface $buildContainer */
-        $buildContainer = static::$kernel->getContainer()->get('lightsaml.container.build');
-        $providerContainer = $buildContainer->getProviderContainer();
-        $this->assertInstanceOf(AttributeValueProviderInterface::class, $providerContainer->getAttributeValueProvider());
-        $this->assertInstanceOf(SessionInfoProviderInterface::class, $providerContainer->getSessionInfoProvider());
-        $this->assertInstanceOf(NameIdProviderInterface::class, $providerContainer->getNameIdProvider());
-    }
-
-    public function test_credential_container()
-    {
-        static::createClient();
-        /** @var BuildContainerInterface $buildContainer */
-        $buildContainer = static::$kernel->getContainer()->get('lightsaml.container.build');
-        $credentialContainer = $buildContainer->getCredentialContainer();
-        $this->assertInstanceOf(CredentialStoreInterface::class, $credentialContainer->getCredentialStore());
-    }
-
-    public function test_service_container()
-    {
-        static::createClient();
-        /** @var BuildContainerInterface $buildContainer */
-        $buildContainer = static::$kernel->getContainer()->get('lightsaml.container.build');
-        $serviceContainer = $buildContainer->getServiceContainer();
-        $this->assertInstanceOf(AssertionValidatorInterface::class, $serviceContainer->getAssertionValidator());
-        $this->assertInstanceOf(AssertionTimeValidatorInterface::class, $serviceContainer->getAssertionTimeValidator());
-        $this->assertInstanceOf(SignatureResolverInterface::class, $serviceContainer->getSignatureResolver());
-        $this->assertInstanceOf(EndpointResolverInterface::class, $serviceContainer->getEndpointResolver());
-        $this->assertInstanceOf(NameIdValidatorInterface::class, $serviceContainer->getNameIdValidator());
-        $this->assertInstanceOf(BindingFactoryInterface::class, $serviceContainer->getBindingFactory());
-        $this->assertInstanceOf(SignatureValidatorInterface::class, $serviceContainer->getSignatureValidator());
-        $this->assertInstanceOf(CredentialResolverInterface::class, $serviceContainer->getCredentialResolver());
-        $this->assertInstanceOf(SessionProcessorInterface::class, $serviceContainer->getSessionProcessor());
-    }
-
-
-    public function test_own_container()
-    {
-        static::createClient();
-        /** @var BuildContainerInterface $buildContainer */
-        $buildContainer = static::$kernel->getContainer()->get('lightsaml.container.build');
         $ownContainer = $buildContainer->getOwnContainer();
-        $this->assertInstanceOf(EntityDescriptorProviderInterface::class, $ownContainer->getOwnEntityDescriptorProvider());
-        $this->assertInternalType('array', $ownContainer->getOwnCredentials());
         array_map(function ($credential) {
             $this->assertInstanceOf(CredentialInterface::class, $credential);
         }, $ownContainer->getOwnCredentials());
