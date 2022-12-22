@@ -4,11 +4,12 @@ namespace LightSaml\SymfonyBridgeBundle\Tests\DependencyInjection;
 
 use LightSaml\SymfonyBridgeBundle\DependencyInjection\Configuration;
 use PHPUnit\Framework\TestCase;
+use Symfony\Component\Config\Definition\Exception\InvalidConfigurationException;
 use Symfony\Component\Config\Definition\Processor;
 
 class ConfigurationTest extends TestCase
 {
-    public function test_passes_with_own_entity_id_only()
+    public function test_passes_with_own_entity_id_only(): void
     {
         $config = [
             'light_saml_symfony_bridge' => [
@@ -17,15 +18,14 @@ class ConfigurationTest extends TestCase
                 ],
             ],
         ];
-        $this->processConfiguration($config);
+        $this->assertIsArray($this->processConfiguration($config));
     }
 
-    /**
-     * @expectedException \Symfony\Component\Config\Definition\Exception\InvalidConfigurationException
-     * @expectedExceptionMessage The child node "own" at path "light_saml_symfony_bridge" must be configured
-     */
-    public function test_does_not_allow_empty_config()
+    public function test_does_not_allow_empty_config(): void
     {
+        $this->expectExceptionMessage('The child config "own" under "light_saml_symfony_bridge" must be configured');
+        $this->expectException(InvalidConfigurationException::class);
+
         $config = [
             'light_saml_symfony_bridge' => [
 
@@ -34,7 +34,7 @@ class ConfigurationTest extends TestCase
         $this->processConfiguration($config);
     }
 
-    public function test_allows_own_entity_descriptor_provider_from_file()
+    public function test_allows_own_entity_descriptor_provider_from_file(): void
     {
         $config = [
             'light_saml_symfony_bridge' => [
@@ -46,10 +46,10 @@ class ConfigurationTest extends TestCase
                 ],
             ],
         ];
-        $this->processConfiguration($config);
+        $this->assertIsArray($this->processConfiguration($config));
     }
 
-    public function test_allows_own_entity_descriptor_provider_from_file_with_entity_id()
+    public function test_allows_own_entity_descriptor_provider_from_file_with_entity_id(): void
     {
         $config = [
             'light_saml_symfony_bridge' => [
@@ -62,10 +62,10 @@ class ConfigurationTest extends TestCase
                 ],
             ],
         ];
-        $this->processConfiguration($config);
+        $this->assertIsArray($this->processConfiguration($config));
     }
 
-    public function test_allows_own_entity_descriptor_provider_from_service()
+    public function test_allows_own_entity_descriptor_provider_from_service(): void
     {
         $config = [
             'light_saml_symfony_bridge' => [
@@ -77,10 +77,10 @@ class ConfigurationTest extends TestCase
                 ],
             ],
         ];
-        $this->processConfiguration($config);
+        $this->assertIsArray($this->processConfiguration($config));
     }
 
-    public function test_allows_own_credentials_from_files()
+    public function test_allows_own_credentials_from_files(): void
     {
         $config = [
             'light_saml_symfony_bridge' => [
@@ -100,10 +100,10 @@ class ConfigurationTest extends TestCase
                 ],
             ],
         ];
-        $this->processConfiguration($config);
+        $this->assertIsArray($this->processConfiguration($config));
     }
 
-    public function test_allows_system_event_dispatcher()
+    public function test_allows_system_event_dispatcher(): void
     {
         $config = [
             'light_saml_symfony_bridge' => [
@@ -115,10 +115,10 @@ class ConfigurationTest extends TestCase
                 ],
             ],
         ];
-        $this->processConfiguration($config);
+        $this->assertIsArray($this->processConfiguration($config));
     }
 
-    public function test_allows_system_logger()
+    public function test_allows_system_logger(): void
     {
         $config = [
             'light_saml_symfony_bridge' => [
@@ -130,10 +130,10 @@ class ConfigurationTest extends TestCase
                 ],
             ],
         ];
-        $this->processConfiguration($config);
+        $this->assertIsArray($this->processConfiguration($config));
     }
 
-    public function test_allows_store_request()
+    public function test_allows_store_request(): void
     {
         $config = [
             'light_saml_symfony_bridge' => [
@@ -145,10 +145,10 @@ class ConfigurationTest extends TestCase
                 ],
             ],
         ];
-        $this->processConfiguration($config);
+        $this->assertIsArray($this->processConfiguration($config));
     }
 
-    public function test_allows_store_id_state()
+    public function test_allows_store_id_state(): void
     {
         $config = [
             'light_saml_symfony_bridge' => [
@@ -160,10 +160,10 @@ class ConfigurationTest extends TestCase
                 ],
             ],
         ];
-        $this->processConfiguration($config);
+        $this->assertIsArray($this->processConfiguration($config));
     }
 
-    public function test_allows_store_sso_state()
+    public function test_allows_store_sso_state(): void
     {
         $config = [
             'light_saml_symfony_bridge' => [
@@ -175,10 +175,10 @@ class ConfigurationTest extends TestCase
                 ],
             ],
         ];
-        $this->processConfiguration($config);
+        $this->assertIsArray($this->processConfiguration($config));
     }
 
-    public function test_allows_party_idp_from_files()
+    public function test_allows_party_idp_from_files(): void
     {
         $config = [
             'light_saml_symfony_bridge' => [
@@ -195,19 +195,12 @@ class ConfigurationTest extends TestCase
                 ],
             ],
         ];
-        $this->processConfiguration($config);
+        $this->assertIsArray($this->processConfiguration($config));
     }
 
-    /**
-     * @param array $configs
-     *
-     * @return array
-     */
-    protected function processConfiguration(array $configs)
+    protected function processConfiguration(array $configs): array
     {
         $configuration = new Configuration();
-        $processor = new Processor();
-
-        return $processor->processConfiguration($configuration, $configs);
+        return (new Processor())->processConfiguration($configuration, $configs);
     }
 }

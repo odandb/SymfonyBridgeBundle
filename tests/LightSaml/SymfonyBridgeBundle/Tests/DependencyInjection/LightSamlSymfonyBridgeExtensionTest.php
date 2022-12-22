@@ -2,23 +2,29 @@
 
 namespace LightSaml\SymfonyBridgeBundle\Tests\DependencyInjection;
 
+use LightSaml\Store\Credential\X509FileCredentialStore;
 use LightSaml\SymfonyBridgeBundle\DependencyInjection\LightSamlSymfonyBridgeExtension;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\ParameterBag\ParameterBag;
+use LightSaml\SymfonyBridgeBundle\Bridge\Container\BuildContainer;
+use LightSaml\Provider\EntityDescriptor\FileEntityDescriptorProviderFactory;
+use LightSaml\Store\Credential\CompositeCredentialStore;
 
 class LightSamlSymfonyBridgeExtensionTest extends TestCase
 {
-    public function test_loads_with_configuration()
+    public function test_loads_with_configuration(): void
     {
         $containerBuilder = new ContainerBuilder(new ParameterBag());
         $extension = new LightSamlSymfonyBridgeExtension();
         $config = $this->getDefaultConfig();
 
         $extension->load($config, $containerBuilder);
+
+        $this->expectNotToPerformAssertions();
     }
 
-    public function test_loads_build_container()
+    public function test_loads_build_container(): void
     {
         $containerBuilder = new ContainerBuilder(new ParameterBag());
         $extension = new LightSamlSymfonyBridgeExtension();
@@ -26,10 +32,10 @@ class LightSamlSymfonyBridgeExtensionTest extends TestCase
         $extension->load($config, $containerBuilder);
 
         $this->assertTrue($containerBuilder->hasDefinition('lightsaml.container.build'));
-        $this->assertEquals('LightSaml\SymfonyBridgeBundle\Bridge\Container\BuildContainer', $containerBuilder->getDefinition('lightsaml.container.build')->getClass());
+        $this->assertEquals(BuildContainer::class, $containerBuilder->getDefinition('lightsaml.container.build')->getClass());
     }
 
-    public function test_set_entity_id_parameter_from_configuration()
+    public function test_set_entity_id_parameter_from_configuration(): void
     {
         $containerBuilder = new ContainerBuilder(new ParameterBag());
         $extension = new LightSamlSymfonyBridgeExtension();
@@ -39,7 +45,7 @@ class LightSamlSymfonyBridgeExtensionTest extends TestCase
         $this->assertEquals($config['light_saml_symfony_bridge']['own']['entity_id'], $containerBuilder->getParameter('lightsaml.own.entity_id'));
     }
 
-    public function test_sets_own_entity_descriptor_provider_factory_from_entity_descriptor_file()
+    public function test_sets_own_entity_descriptor_provider_factory_from_entity_descriptor_file(): void
     {
         $containerBuilder = new ContainerBuilder(new ParameterBag());
         $extension = new LightSamlSymfonyBridgeExtension();
@@ -49,20 +55,15 @@ class LightSamlSymfonyBridgeExtensionTest extends TestCase
 
         $this->assertTrue($containerBuilder->hasDefinition('lightsaml.own.entity_descriptor_provider'));
         $definition = $containerBuilder->getDefinition('lightsaml.own.entity_descriptor_provider');
-        if (method_exists($definition, 'getFactory')) {
-            $this->assertEquals(
-                ['LightSaml\Provider\EntityDescriptor\FileEntityDescriptorProviderFactory', 'fromEntityDescriptorFile'],
-                $definition->getFactory()
-            );
-        } else {
-            $this->assertEquals('LightSaml\Provider\EntityDescriptor\FileEntityDescriptorProviderFactory', $definition->getFactoryClass());
-            $this->assertEquals('fromEntityDescriptorFile', $definition->getFactoryMethod());
-        }
+        $this->assertEquals(
+            [FileEntityDescriptorProviderFactory::class, 'fromEntityDescriptorFile'],
+            $definition->getFactory()
+        );
         $this->assertCount(1, $definition->getArguments());
         $this->assertEquals($config['light_saml_symfony_bridge']['own']['entity_descriptor_provider']['filename'], $definition->getArgument(0));
     }
 
-    public function test_sets_swn_entity_descriptor_provider_factory_from_entities_descriptor_file_and_entity_id()
+    public function test_sets_swn_entity_descriptor_provider_factory_from_entities_descriptor_file_and_entity_id(): void
     {
         $containerBuilder = new ContainerBuilder(new ParameterBag());
         $extension = new LightSamlSymfonyBridgeExtension();
@@ -73,21 +74,16 @@ class LightSamlSymfonyBridgeExtensionTest extends TestCase
 
         $this->assertTrue($containerBuilder->hasDefinition('lightsaml.own.entity_descriptor_provider'));
         $definition = $containerBuilder->getDefinition('lightsaml.own.entity_descriptor_provider');
-        if (method_exists($definition, 'getFactory')) {
-            $this->assertEquals(
-                ['LightSaml\Provider\EntityDescriptor\FileEntityDescriptorProviderFactory', 'fromEntitiesDescriptorFile'],
-                $definition->getFactory()
-            );
-        } else {
-            $this->assertEquals('LightSaml\Provider\EntityDescriptor\FileEntityDescriptorProviderFactory', $definition->getFactoryClass());
-            $this->assertEquals('fromEntitiesDescriptorFile', $definition->getFactoryMethod());
-        }
+        $this->assertEquals(
+            [FileEntityDescriptorProviderFactory::class, 'fromEntitiesDescriptorFile'],
+            $definition->getFactory()
+        );
         $this->assertCount(2, $definition->getArguments());
         $this->assertEquals($config['light_saml_symfony_bridge']['own']['entity_descriptor_provider']['filename'], $definition->getArgument(0));
         $this->assertEquals($config['light_saml_symfony_bridge']['own']['entity_descriptor_provider']['entity_id'], $definition->getArgument(1));
     }
 
-    public function test_sets_own_entity_descriptor_provider_to_custom_alias()
+    public function test_sets_own_entity_descriptor_provider_to_custom_alias(): void
     {
         $containerBuilder = new ContainerBuilder(new ParameterBag());
         $extension = new LightSamlSymfonyBridgeExtension();
@@ -100,7 +96,7 @@ class LightSamlSymfonyBridgeExtensionTest extends TestCase
         $this->assertEquals($expectedAlias, (string) $containerBuilder->getAlias('lightsaml.own.entity_descriptor_provider'));
     }
 
-    public function test_adds_own_file_credentials()
+    public function test_adds_own_file_credentials(): void
     {
         $containerBuilder = new ContainerBuilder(new ParameterBag());
         $extension = new LightSamlSymfonyBridgeExtension();
@@ -126,7 +122,7 @@ class LightSamlSymfonyBridgeExtensionTest extends TestCase
 
         $this->assertTrue($containerBuilder->has('lightsaml.own.credential_store.0'));
         $definition = $containerBuilder->getDefinition('lightsaml.own.credential_store.0');
-        $this->assertEquals(\LightSaml\Store\Credential\X509FileCredentialStore::class, $definition->getClass());
+        $this->assertEquals(X509FileCredentialStore::class, $definition->getClass());
         $this->assertCount(4, $definition->getArguments());
         $this->assertEquals($config['light_saml_symfony_bridge']['own']['entity_id'], $definition->getArgument(0));
         $this->assertEquals($firstCertificate, $definition->getArgument(1));
@@ -135,7 +131,7 @@ class LightSamlSymfonyBridgeExtensionTest extends TestCase
 
         $this->assertTrue($containerBuilder->has('lightsaml.own.credential_store.1'));
         $definition = $containerBuilder->getDefinition('lightsaml.own.credential_store.1');
-        $this->assertEquals(\LightSaml\Store\Credential\X509FileCredentialStore::class, $definition->getClass());
+        $this->assertEquals(X509FileCredentialStore::class, $definition->getClass());
         $this->assertCount(4, $definition->getArguments());
         $this->assertEquals($config['light_saml_symfony_bridge']['own']['entity_id'], $definition->getArgument(0));
         $this->assertEquals($secondCertificate, $definition->getArgument(1));
@@ -143,7 +139,7 @@ class LightSamlSymfonyBridgeExtensionTest extends TestCase
         $this->assertEquals($secondPassword, $definition->getArgument(3));
     }
 
-    public function test_adds_idp_entities_from_file()
+    public function test_adds_idp_entities_from_file(): void
     {
         $containerBuilder = new ContainerBuilder(new ParameterBag());
         $extension = new LightSamlSymfonyBridgeExtension();
@@ -173,7 +169,7 @@ class LightSamlSymfonyBridgeExtensionTest extends TestCase
         $this->assertEquals('lightsaml.party.idp_entity_descriptor_store.file.1', (string) $calls[1][1][0]);
     }
 
-    public function test_sets_store_request_alias()
+    public function test_sets_store_request_alias(): void
     {
         $containerBuilder = new ContainerBuilder(new ParameterBag());
         $extension = new LightSamlSymfonyBridgeExtension();
@@ -185,7 +181,7 @@ class LightSamlSymfonyBridgeExtensionTest extends TestCase
         $this->assertEquals($expected, (string) $containerBuilder->getAlias('lightsaml.store.request'));
     }
 
-    public function test_sets_store_id_state_alias()
+    public function test_sets_store_id_state_alias(): void
     {
         $containerBuilder = new ContainerBuilder(new ParameterBag());
         $extension = new LightSamlSymfonyBridgeExtension();
@@ -197,7 +193,7 @@ class LightSamlSymfonyBridgeExtensionTest extends TestCase
         $this->assertEquals($expected, (string) $containerBuilder->getAlias('lightsaml.store.id_state'));
     }
 
-    public function test_sets_store_sso_state_alias()
+    public function test_sets_store_sso_state_alias(): void
     {
         $containerBuilder = new ContainerBuilder(new ParameterBag());
         $extension = new LightSamlSymfonyBridgeExtension();
@@ -209,7 +205,7 @@ class LightSamlSymfonyBridgeExtensionTest extends TestCase
         $this->assertEquals($expected, (string) $containerBuilder->getAlias('lightsaml.store.sso_state'));
     }
 
-    public function test_loads_own_credential_store()
+    public function test_loads_own_credential_store(): void
     {
         $containerBuilder = new ContainerBuilder(new ParameterBag());
         $extension = new LightSamlSymfonyBridgeExtension();
@@ -219,10 +215,10 @@ class LightSamlSymfonyBridgeExtensionTest extends TestCase
 
         $this->assertTrue($containerBuilder->hasDefinition('lightsaml.own.credential_store'));
         $definition = $containerBuilder->getDefinition('lightsaml.own.credential_store');
-        $this->assertEquals('LightSaml\Store\Credential\CompositeCredentialStore', $definition->getClass());
+        $this->assertEquals(CompositeCredentialStore::class, $definition->getClass());
     }
 
-    public function testLoadsSystemTimeProvider()
+    public function testLoadsSystemTimeProvider(): void
     {
         $containerBuilder = new ContainerBuilder(new ParameterBag());
         $extension = new LightSamlSymfonyBridgeExtension();
@@ -233,7 +229,7 @@ class LightSamlSymfonyBridgeExtensionTest extends TestCase
         $this->assertTrue($containerBuilder->hasDefinition('lightsaml.system.time_provider'));
     }
 
-    public function test_loads_system_event_dispatcher()
+    public function test_loads_system_event_dispatcher(): void
     {
         $containerBuilder = new ContainerBuilder(new ParameterBag());
         $extension = new LightSamlSymfonyBridgeExtension();
@@ -244,7 +240,7 @@ class LightSamlSymfonyBridgeExtensionTest extends TestCase
         $this->assertTrue($containerBuilder->hasDefinition('lightsaml.system.event_dispatcher'));
     }
 
-    public function test_loads_system_custom_event_dispatcher()
+    public function test_loads_system_custom_event_dispatcher(): void
     {
         $containerBuilder = new ContainerBuilder(new ParameterBag());
         $extension = new LightSamlSymfonyBridgeExtension();
@@ -257,7 +253,7 @@ class LightSamlSymfonyBridgeExtensionTest extends TestCase
         $this->assertEquals($expectedAlias, (string) $containerBuilder->getAlias('lightsaml.system.event_dispatcher'));
     }
 
-    public function test_loads_system_logger_when_given_in_config()
+    public function test_loads_system_logger_when_given_in_config(): void
     {
         $containerBuilder = new ContainerBuilder(new ParameterBag());
         $extension = new LightSamlSymfonyBridgeExtension();
@@ -269,7 +265,7 @@ class LightSamlSymfonyBridgeExtensionTest extends TestCase
         $this->assertTrue($containerBuilder->hasAlias('lightsaml.system.logger'));
     }
 
-    public function test_loads_system_custom_logger()
+    public function test_loads_system_custom_logger(): void
     {
         $containerBuilder = new ContainerBuilder(new ParameterBag());
         $extension = new LightSamlSymfonyBridgeExtension();
@@ -282,7 +278,7 @@ class LightSamlSymfonyBridgeExtensionTest extends TestCase
         $this->assertEquals($expectedAlias, (string) $containerBuilder->getAlias('lightsaml.system.logger'));
     }
 
-    public function profile_provider()
+    public function profile_provider(): array
     {
         return [
             ['ligthsaml.profile.metadata'],
@@ -293,19 +289,19 @@ class LightSamlSymfonyBridgeExtensionTest extends TestCase
     /**
      * @dataProvider profile_provider
      */
-    public function test_loads_public_profile($id)
+    public function test_loads_public_profile(string $id): void
     {
         $containerBuilder = new ContainerBuilder(new ParameterBag());
         $extension = new LightSamlSymfonyBridgeExtension();
         $config = $this->getDefaultConfig();
         $extension->load($config, $containerBuilder);
 
-        $this->assertTrue($containerBuilder->hasDefinition('ligthsaml.profile.metadata'));
-        $defn = $containerBuilder->getDefinition('ligthsaml.profile.metadata');
+        $this->assertTrue($containerBuilder->hasDefinition($id));
+        $defn = $containerBuilder->getDefinition($id);
         $this->assertTrue($defn->isPublic());
     }
 
-    private function getDefaultConfig()
+    private function getDefaultConfig(): array
     {
         return [
             'light_saml_symfony_bridge' => [

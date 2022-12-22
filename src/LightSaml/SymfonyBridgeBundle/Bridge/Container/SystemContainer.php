@@ -21,27 +21,14 @@ use Symfony\Component\HttpFoundation\Session\SessionInterface;
 
 class SystemContainer implements SystemContainerInterface
 {
-    /** @var RequestStack */
-    private $requestStack;
+    private RequestStack $requestStack;
 
-    /** @var SessionInterface */
-    private $session;
+    private TimeProviderInterface $timeProvider;
 
-    /** @var TimeProviderInterface */
-    private $timeProvider;
+    private EventDispatcherInterface $eventDispatcher;
 
-    /** @var EventDispatcherInterface */
-    private $eventDispatcher;
+    private LoggerInterface $logger;
 
-    /** @var LoggerInterface */
-    private $logger;
-
-    /**
-     * @param RequestStack             $requestStack
-     * @param TimeProviderInterface    $timeProvider
-     * @param EventDispatcherInterface $eventDispatcher
-     * @param LoggerInterface          $logger
-     */
     public function __construct(
         RequestStack $requestStack,
         TimeProviderInterface $timeProvider,
@@ -49,48 +36,32 @@ class SystemContainer implements SystemContainerInterface
         LoggerInterface $logger
     ) {
         $this->requestStack = $requestStack;
-        $this->session = $requestStack->getSession();
         $this->timeProvider = $timeProvider;
         $this->eventDispatcher = $eventDispatcher;
         $this->logger = $logger;
     }
 
-    /**
-     * @return Request
-     */
-    public function getRequest()
+    public function getRequest(): Request
     {
         return $this->requestStack->getCurrentRequest();
     }
 
-    /**
-     * @return SessionInterface
-     */
-    public function getSession()
+    public function getSession(): SessionInterface
     {
-        return $this->session;
+        return $this->requestStack->getSession();
     }
 
-    /**
-     * @return TimeProviderInterface
-     */
-    public function getTimeProvider()
+    public function getTimeProvider(): TimeProviderInterface
     {
         return $this->timeProvider;
     }
 
-    /**
-     * @return EventDispatcherInterface
-     */
-    public function getEventDispatcher()
+    public function getEventDispatcher(): EventDispatcherInterface
     {
         return $this->eventDispatcher;
     }
 
-    /**
-     * @return LoggerInterface
-     */
-    public function getLogger()
+    public function getLogger(): LoggerInterface
     {
         return $this->logger;
     }

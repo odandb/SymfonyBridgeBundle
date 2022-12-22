@@ -1,6 +1,6 @@
 <?php
 
-$finder = PhpCsFixer\Finder::create()
+$finder = (new PhpCsFixer\Finder())
     ->in('src')
 ;
 
@@ -13,7 +13,7 @@ This source file is subject to the MIT license that is bundled
 with this source code in the file LICENSE.
 EOT;
 
-return PhpCsFixer\Config::create()
+return (new PhpCsFixer\Config())
     ->setRules(array(
         '@Symfony' => true,
         'simplified_null_return' => false,

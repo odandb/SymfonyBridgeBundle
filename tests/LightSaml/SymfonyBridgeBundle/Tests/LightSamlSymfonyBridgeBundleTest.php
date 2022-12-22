@@ -10,7 +10,7 @@ use Symfony\Component\DependencyInjection\ParameterBag\ParameterBag;
 
 class LightSamlSymfonyBridgeBundleTest extends TestCase
 {
-    public function build_adds_own_credential_store_compiler_pass_provider()
+    public function build_adds_own_credential_store_compiler_pass_provider(): array
     {
         return [
             ['lightsaml.own.credential_store', 'lightsaml.own_credential_store', 'add'],
@@ -21,13 +21,9 @@ class LightSamlSymfonyBridgeBundleTest extends TestCase
     }
 
     /**
-     * @dataProvider  build_adds_own_credential_store_compiler_pass_provider
-     *
-     * @param $serviceId
-     * @param $tagName
-     * @param $methodName
+     * @dataProvider build_adds_own_credential_store_compiler_pass_provider
      */
-    public function test_build_adds_own_credential_store_compiler_pass($serviceId, $tagName, $methodName)
+    public function test_build_adds_own_credential_store_compiler_pass(string $serviceId, string $tagName, string $methodName): void
     {
         $bundle = new LightSamlSymfonyBridgeBundle();
 
@@ -39,10 +35,12 @@ class LightSamlSymfonyBridgeBundleTest extends TestCase
 
         foreach ($passes as $pass) {
             if ($pass instanceof AddMethodCallCompilerPass) {
-                if ($pass->getServiceId() == $serviceId &&
-                    $pass->getTagName() == $tagName &&
-                    $pass->getMethodName() == $methodName
+                if ($pass->getServiceId() === $serviceId &&
+                    $pass->getTagName() === $tagName &&
+                    $pass->getMethodName() === $methodName
                 ) {
+                    $this->expectNotToPerformAssertions();
+
                     return;
                 }
             }

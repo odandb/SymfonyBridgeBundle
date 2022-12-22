@@ -14,35 +14,26 @@ namespace LightSaml\SymfonyBridgeBundle\Factory;
 use LightSaml\Builder\EntityDescriptor\SimpleEntityDescriptorBuilder;
 use LightSaml\Credential\X509Credential;
 use LightSaml\Store\Credential\CredentialStoreInterface;
+use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\Routing\RouterInterface;
 
 class OwnEntityDescriptorProviderFactory
 {
-    /**
-     * @param string                   $ownEntityId
-     * @param RouterInterface          $router
-     * @param string                   $acsRouteName
-     * @param string                   $ssoRouteName
-     * @param CredentialStoreInterface $ownCredentialStore
-     *
-     * @return SimpleEntityDescriptorBuilder
-     */
     public static function build(
-        $ownEntityId,
+        string $ownEntityId,
         RouterInterface $router,
-        $acsRouteName,
-        $ssoRouteName,
+        ?string $acsRouteName,
+        ?string $ssoRouteName,
         CredentialStoreInterface $ownCredentialStore
-    ) {
+    ): SimpleEntityDescriptorBuilder {
         /** @var X509Credential[] $arrOwnCredentials */
         $arrOwnCredentials = $ownCredentialStore->getByEntityId($ownEntityId);
-        $builder = new SimpleEntityDescriptorBuilder(
+
+        return new SimpleEntityDescriptorBuilder(
             $ownEntityId,
-            $acsRouteName ? $router->generate($acsRouteName, [], RouterInterface::ABSOLUTE_URL) : null,
-            $ssoRouteName ? $router->generate($ssoRouteName, [], RouterInterface::ABSOLUTE_URL) : null,
+            $acsRouteName ? $router->generate($acsRouteName, [], UrlGeneratorInterface::ABSOLUTE_URL) : null,
+            $ssoRouteName ? $router->generate($ssoRouteName, [], UrlGeneratorInterface::ABSOLUTE_URL) : null,
             $arrOwnCredentials[0]->getCertificate()
         );
-
-        return $builder;
     }
 }

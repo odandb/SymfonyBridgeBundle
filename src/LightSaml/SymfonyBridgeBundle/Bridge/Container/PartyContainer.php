@@ -17,20 +17,12 @@ use LightSaml\Store\TrustOptions\TrustOptionsStoreInterface;
 
 class PartyContainer implements PartyContainerInterface
 {
-    /** @var EntityDescriptorStoreInterface */
-    private $idpEntityDescriptorStore;
+    private EntityDescriptorStoreInterface $idpEntityDescriptorStore;
 
-    /** @var EntityDescriptorStoreInterface */
-    private $spEntityDescriptorStore;
+    private EntityDescriptorStoreInterface $spEntityDescriptorStore;
 
-    /** @var TrustOptionsStoreInterface */
-    private $trustOptionsStore;
+    private TrustOptionsStoreInterface $trustOptionsStore;
 
-    /**
-     * @param EntityDescriptorStoreInterface $idpEntityDescriptorStore
-     * @param EntityDescriptorStoreInterface $spEntityDescriptorStore
-     * @param TrustOptionsStoreInterface     $trustOptionsStore
-     */
     public function __construct(
         EntityDescriptorStoreInterface $idpEntityDescriptorStore,
         EntityDescriptorStoreInterface $spEntityDescriptorStore,
@@ -41,26 +33,17 @@ class PartyContainer implements PartyContainerInterface
         $this->trustOptionsStore = $trustOptionsStore;
     }
 
-    /**
-     * @return EntityDescriptorStoreInterface
-     */
-    public function getIdpEntityDescriptorStore()
+    public function getIdpEntityDescriptorStore(): EntityDescriptorStoreInterface
     {
         return $this->idpEntityDescriptorStore;
     }
 
-    /**
-     * @return EntityDescriptorStoreInterface
-     */
-    public function getSpEntityDescriptorStore()
+    public function getSpEntityDescriptorStore(): EntityDescriptorStoreInterface
     {
         return $this->spEntityDescriptorStore;
     }
 
-    /**
-     * @return TrustOptionsStoreInterface
-     */
-    public function getTrustOptionsStore()
+    public function getTrustOptionsStore(): TrustOptionsStoreInterface
     {
         return $this->trustOptionsStore;
     }

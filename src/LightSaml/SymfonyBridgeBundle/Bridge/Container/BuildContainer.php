@@ -22,36 +22,20 @@ use LightSaml\Build\Container\SystemContainerInterface;
 
 class BuildContainer implements BuildContainerInterface
 {
-    /** @var SystemContainerInterface */
-    private $systemsystemContainer;
+    private SystemContainerInterface $systemsystemContainer;
 
-    /** @var PartyContainerInterface */
-    private $partypartyContainer;
+    private PartyContainerInterface $partypartyContainer;
 
-    /** @var StoreContainerInterface */
-    private $storeContainer;
+    private StoreContainerInterface $storeContainer;
 
-    /** @var OwnContainerInterface */
-    private $ownContainer;
+    private OwnContainerInterface $ownContainer;
 
-    /** @var ProviderContainerInterface */
-    private $providerContainer;
+    private ProviderContainerInterface $providerContainer;
 
-    /** @var ServiceContainerInterface */
-    private $serviceContainer;
+    private ServiceContainerInterface $serviceContainer;
 
-    /** @var CredentialContainerInterface */
-    private $credentialContainer;
+    private CredentialContainerInterface $credentialContainer;
 
-    /**
-     * @param SystemContainerInterface     $systemContainer
-     * @param PartyContainerInterface      $partyContainer
-     * @param StoreContainerInterface      $storeContainer
-     * @param ProviderContainerInterface   $providerContainer
-     * @param CredentialContainerInterface $credentialContainer
-     * @param ServiceContainerInterface    $serviceContainer
-     * @param OwnContainerInterface        $ownContainer
-     */
     public function __construct(
         SystemContainerInterface $systemContainer,
         PartyContainerInterface $partyContainer,
@@ -70,58 +54,37 @@ class BuildContainer implements BuildContainerInterface
         $this->ownContainer = $ownContainer;
     }
 
-    /**
-     * @return SystemContainerInterface
-     */
-    public function getSystemContainer()
+    public function getSystemContainer(): SystemContainerInterface
     {
         return $this->systemsystemContainer;
     }
 
-    /**
-     * @return PartyContainerInterface
-     */
-    public function getPartyContainer()
+    public function getPartyContainer(): PartyContainerInterface
     {
         return $this->partypartyContainer;
     }
 
-    /**
-     * @return StoreContainerInterface
-     */
-    public function getStoreContainer()
+    public function getStoreContainer(): StoreContainerInterface
     {
         return $this->storeContainer;
     }
 
-    /**
-     * @return ProviderContainerInterface
-     */
-    public function getProviderContainer()
+    public function getProviderContainer(): ProviderContainerInterface
     {
         return $this->providerContainer;
     }
 
-    /**
-     * @return CredentialContainerInterface
-     */
-    public function getCredentialContainer()
+    public function getCredentialContainer(): CredentialContainerInterface
     {
         return $this->credentialContainer;
     }
 
-    /**
-     * @return ServiceContainerInterface
-     */
-    public function getServiceContainer()
+    public function getServiceContainer(): ServiceContainerInterface
     {
         return $this->serviceContainer;
     }
 
-    /**
-     * @return OwnContainerInterface
-     */
-    public function getOwnContainer()
+    public function getOwnContainer(): OwnContainerInterface
     {
         return $this->ownContainer;
     }

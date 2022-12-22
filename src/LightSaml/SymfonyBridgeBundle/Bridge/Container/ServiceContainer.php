@@ -24,44 +24,24 @@ use LightSaml\Validator\Model\Signature\SignatureValidatorInterface;
 
 class ServiceContainer implements ServiceContainerInterface
 {
-    /** @var AssertionValidatorInterface */
-    private $assertionValidator;
+    private AssertionValidatorInterface $assertionValidator;
 
-    /** @var AssertionTimeValidatorInterface */
-    private $assertionTimeValidator;
+    private AssertionTimeValidatorInterface $assertionTimeValidator;
 
-    /** @var SignatureResolverInterface */
-    private $signatureResolver;
+    private SignatureResolverInterface $signatureResolver;
 
-    /** @var EndpointResolverInterface */
-    private $endpointResolver;
+    private EndpointResolverInterface $endpointResolver;
 
-    /** @var NameIdValidatorInterface */
-    private $nameIdValidator;
+    private NameIdValidatorInterface $nameIdValidator;
 
-    /** @var BindingFactoryInterface */
-    private $bindingFactory;
+    private BindingFactoryInterface $bindingFactory;
 
-    /** @var SignatureValidatorInterface */
-    private $signatureValidator;
+    private SignatureValidatorInterface $signatureValidator;
 
-    /** @var CredentialResolverInterface */
-    private $credentialResolver;
+    private CredentialResolverInterface $credentialResolver;
 
-    /** @var SessionProcessorInterface */
-    private $sessionProcessor;
+    private SessionProcessorInterface $sessionProcessor;
 
-    /**
-     * @param AssertionValidatorInterface     $assertionValidator
-     * @param AssertionTimeValidatorInterface $assertionTimeValidator
-     * @param SignatureResolverInterface      $signatureResolver
-     * @param EndpointResolverInterface       $endpointResolver
-     * @param NameIdValidatorInterface        $nameIdValidator
-     * @param BindingFactoryInterface         $bindingFactory
-     * @param SignatureValidatorInterface     $signatureValidator
-     * @param CredentialResolverInterface     $credentialResolver
-     * @param SessionProcessorInterface       $sessionProcessor
-     */
     public function __construct(
         AssertionValidatorInterface $assertionValidator,
         AssertionTimeValidatorInterface $assertionTimeValidator,
@@ -84,82 +64,52 @@ class ServiceContainer implements ServiceContainerInterface
         $this->sessionProcessor = $sessionProcessor;
     }
 
-    /**
-     * @return AssertionValidatorInterface
-     */
-    public function getAssertionValidator()
+    public function getAssertionValidator(): AssertionValidatorInterface
     {
         return $this->assertionValidator;
     }
 
-    /**
-     * @return AssertionTimeValidatorInterface
-     */
-    public function getAssertionTimeValidator()
+    public function getAssertionTimeValidator(): AssertionTimeValidatorInterface
     {
         return $this->assertionTimeValidator;
     }
 
-    /**
-     * @return SignatureResolverInterface
-     */
-    public function getSignatureResolver()
+    public function getSignatureResolver(): SignatureResolverInterface
     {
         return $this->signatureResolver;
     }
 
-    /**
-     * @return EndpointResolverInterface
-     */
-    public function getEndpointResolver()
+    public function getEndpointResolver(): EndpointResolverInterface
     {
         return $this->endpointResolver;
     }
 
-    /**
-     * @return NameIdValidatorInterface
-     */
-    public function getNameIdValidator()
+    public function getNameIdValidator(): NameIdValidatorInterface
     {
         return $this->nameIdValidator;
     }
 
-    /**
-     * @return BindingFactoryInterface
-     */
-    public function getBindingFactory()
+    public function getBindingFactory(): BindingFactoryInterface
     {
         return $this->bindingFactory;
     }
 
-    /**
-     * @return SignatureValidatorInterface
-     */
-    public function getSignatureValidator()
+    public function getSignatureValidator(): SignatureValidatorInterface
     {
         return $this->signatureValidator;
     }
 
-    /**
-     * @return CredentialResolverInterface
-     */
-    public function getCredentialResolver()
+    public function getCredentialResolver(): CredentialResolverInterface
     {
         return $this->credentialResolver;
     }
 
-    /**
-     * @return \LightSaml\Resolver\Logout\LogoutSessionResolverInterface
-     */
     public function getLogoutSessionResolver()
     {
         throw new \LogicException('Not implemented');
     }
 
-    /**
-     * @return SessionProcessorInterface
-     */
-    public function getSessionProcessor()
+    public function getSessionProcessor(): SessionProcessorInterface
     {
         return $this->sessionProcessor;
     }

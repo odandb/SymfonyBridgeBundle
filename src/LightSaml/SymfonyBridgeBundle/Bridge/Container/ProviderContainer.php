@@ -18,20 +18,12 @@ use LightSaml\Provider\Session\SessionInfoProviderInterface;
 
 class ProviderContainer implements ProviderContainerInterface
 {
-    /** @var AttributeValueProviderInterface */
-    private $attributeValueProvider;
+    private AttributeValueProviderInterface $attributeValueProvider;
 
-    /** @var SessionInfoProviderInterface */
-    private $sessionInfoProvider;
+    private SessionInfoProviderInterface $sessionInfoProvider;
 
-    /** @var NameIdProviderInterface */
-    private $nameIdProvider;
+    private NameIdProviderInterface $nameIdProvider;
 
-    /**
-     * @param AttributeValueProviderInterface $attributeValueProvider
-     * @param SessionInfoProviderInterface    $sessionInfoProvider
-     * @param NameIdProviderInterface         $nameIdProvider
-     */
     public function __construct(
         AttributeValueProviderInterface $attributeValueProvider,
         SessionInfoProviderInterface $sessionInfoProvider,
@@ -42,26 +34,17 @@ class ProviderContainer implements ProviderContainerInterface
         $this->nameIdProvider = $nameIdProvider;
     }
 
-    /**
-     * @return AttributeValueProviderInterface
-     */
-    public function getAttributeValueProvider()
+    public function getAttributeValueProvider(): AttributeValueProviderInterface
     {
         return $this->attributeValueProvider;
     }
 
-    /**
-     * @return SessionInfoProviderInterface
-     */
-    public function getSessionInfoProvider()
+    public function getSessionInfoProvider(): SessionInfoProviderInterface
     {
         return $this->sessionInfoProvider;
     }
 
-    /**
-     * @return NameIdProviderInterface
-     */
-    public function getNameIdProvider()
+    public function getNameIdProvider(): NameIdProviderInterface
     {
         return $this->nameIdProvider;
     }

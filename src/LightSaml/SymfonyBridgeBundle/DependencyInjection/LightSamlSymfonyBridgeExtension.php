@@ -11,31 +11,33 @@
 
 namespace LightSaml\SymfonyBridgeBundle\DependencyInjection;
 
-use Symfony\Component\DependencyInjection\ContainerBuilder;
+use LightSaml\Provider\EntityDescriptor\FileEntityDescriptorProviderFactory;
+use LightSaml\Store\Credential\X509FileCredentialStore;
+use LightSaml\SymfonyBridgeBundle\Factory\OwnEntityDescriptorProviderFactory;
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\DependencyInjection\ChildDefinition;
+use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Definition;
-use Symfony\Component\DependencyInjection\DefinitionDecorator;
+use Symfony\Component\DependencyInjection\Loader;
 use Symfony\Component\DependencyInjection\Reference;
 use Symfony\Component\HttpKernel\DependencyInjection\Extension;
-use Symfony\Component\DependencyInjection\Loader;
 
 class LightSamlSymfonyBridgeExtension extends Extension
 {
     /**
      * Loads a specific configuration.
      *
-     * @param array            $config    An array of configuration values
+     * @param array            $configs   An array of configuration values
      * @param ContainerBuilder $container A ContainerBuilder instance
      *
      * @throws \InvalidArgumentException When provided tag is not defined in this extension
      *
      * @api
      */
-    public function load(array $config, ContainerBuilder $container)
+    public function load(array $configs, ContainerBuilder $container): void
     {
         $configuration = new Configuration();
-        $config = $this->processConfiguration($configuration, $config);
+        $configs = $this->processConfiguration($configuration, $configs);
 
         $loader = new Loader\YamlFileLoader($container, new FileLocator(__DIR__.'/../Resources/config'));
         $loader->load('container.yml');
@@ -48,39 +50,39 @@ class LightSamlSymfonyBridgeExtension extends Extension
         $loader->load('provider.yml');
         $loader->load('profile.yml');
 
-        $this->configureOwn($container, $config);
-        $this->configureSystem($container, $config);
-        $this->configureParty($container, $config);
-        $this->configureStore($container, $config);
-        $this->configureCredential($container, $config);
-        $this->configureService($container, $config);
+        $this->configureOwn($container, $configs);
+        $this->configureSystem($container, $configs);
+        $this->configureParty($container, $configs);
+        $this->configureStore($container, $configs);
+        $this->configureCredential($container, $configs);
+        $this->configureService($container, $configs);
     }
 
-    private function configureCredential(ContainerBuilder $container, array $config)
+    private function configureCredential(ContainerBuilder $container, array $config): void
     {
         $this->configureCredentialStore($container, $config);
     }
 
-    private function configureCredentialStore(ContainerBuilder $container, array $config)
+    private function configureCredentialStore(ContainerBuilder $container, array $config): void
     {
         $factoryReference = new Reference('lightsaml.credential.credential_store_factory');
         $definition = $container->getDefinition('lightsaml.credential.credential_store');
-        $this->setFactoryCompatibleWay($definition, $factoryReference, 'buildFromOwnCredentialStore');
+        $definition->setFactory([$factoryReference, 'buildFromOwnCredentialStore']);
     }
 
-    private function configureService(ContainerBuilder $container, array $config)
+    private function configureService(ContainerBuilder $container, array $config): void
     {
         $this->configureServiceCredentialResolver($container, $config);
     }
 
-    private function configureServiceCredentialResolver(ContainerBuilder $container, array $config)
+    private function configureServiceCredentialResolver(ContainerBuilder $container, array $config): void
     {
         $factoryReference = new Reference('lightsaml.service.credential_resolver_factory');
         $definition = $container->getDefinition('lightsaml.service.credential_resolver');
-        $this->setFactoryCompatibleWay($definition, $factoryReference, 'build');
+        $definition->setFactory([$factoryReference, 'build']);
     }
 
-    private function configureOwn(ContainerBuilder $container, array $config)
+    private function configureOwn(ContainerBuilder $container, array $config): void
     {
         $container->setParameter('lightsaml.own.entity_id', $config['own']['entity_id']);
 
@@ -88,7 +90,7 @@ class LightSamlSymfonyBridgeExtension extends Extension
         $this->configureOwnCredentials($container, $config);
     }
 
-    private function configureOwnEntityDescriptor(ContainerBuilder $container, array $config)
+    private function configureOwnEntityDescriptor(ContainerBuilder $container, array $config): void
     {
         if (isset($config['own']['entity_descriptor_provider']['id'])) {
             $container->setAlias('lightsaml.own.entity_descriptor_provider', $config['own']['entity_descriptor_provider']['id']);
@@ -98,11 +100,11 @@ class LightSamlSymfonyBridgeExtension extends Extension
                 $definition
                     ->addArgument($config['own']['entity_descriptor_provider']['filename'])
                     ->addArgument($config['own']['entity_descriptor_provider']['entity_id']);
-                $this->setFactoryCompatibleWay($definition, 'LightSaml\Provider\EntityDescriptor\FileEntityDescriptorProviderFactory', 'fromEntitiesDescriptorFile');
+                $definition->setFactory([FileEntityDescriptorProviderFactory::class, 'fromEntitiesDescriptorFile']);
             } else {
                 $definition = $container->setDefinition('lightsaml.own.entity_descriptor_provider', new Definition())
                     ->addArgument($config['own']['entity_descriptor_provider']['filename']);
-                $this->setFactoryCompatibleWay($definition, 'LightSaml\Provider\EntityDescriptor\FileEntityDescriptorProviderFactory', 'fromEntityDescriptorFile');
+                $definition->setFactory([FileEntityDescriptorProviderFactory::class, 'fromEntityDescriptorFile']);
             }
         } else {
             $definition = $container->getDefinition('lightsaml.own.entity_descriptor_provider');
@@ -113,11 +115,11 @@ class LightSamlSymfonyBridgeExtension extends Extension
                 ->addArgument(null)
                 ->addArgument(new Reference('lightsaml.own.credential_store'))
             ;
-            $this->setFactoryCompatibleWay($definition, 'LightSaml\SymfonyBridgeBundle\Factory\OwnEntityDescriptorProviderFactory', 'build');
+            $definition->setFactory([OwnEntityDescriptorProviderFactory::class, 'build']);
         }
     }
 
-    private function configureOwnCredentials(ContainerBuilder $container, array $config)
+    private function configureOwnCredentials(ContainerBuilder $container, array $config): void
     {
         if (false === isset($config['own']['credentials'])) {
             return;
@@ -125,7 +127,7 @@ class LightSamlSymfonyBridgeExtension extends Extension
 
         foreach ($config['own']['credentials'] as $id => $data) {
             $definition = new Definition(
-                'LightSaml\Store\Credential\X509FileCredentialStore',
+                X509FileCredentialStore::class,
                 [
                     $config['own']['entity_id'],
                     $data['certificate'],
@@ -138,7 +140,7 @@ class LightSamlSymfonyBridgeExtension extends Extension
         }
     }
 
-    private function configureSystem(ContainerBuilder $container, array $config)
+    private function configureSystem(ContainerBuilder $container, array $config): void
     {
         if (isset($config['system']['event_dispatcher'])) {
             $container->removeDefinition('lightsaml.system.event_dispatcher');
@@ -150,31 +152,23 @@ class LightSamlSymfonyBridgeExtension extends Extension
         }
     }
 
-    private function configureParty(ContainerBuilder $container, array $config)
+    private function configureParty(ContainerBuilder $container, array $config): void
     {
         if (isset($config['party']['idp']['files'])) {
             $store = $container->getDefinition('lightsaml.party.idp_entity_descriptor_store');
             foreach ($config['party']['idp']['files'] as $id => $file) {
                 $id = sprintf('lightsaml.party.idp_entity_descriptor_store.file.%s', $id);
 
-                if (class_exists('Symfony\Component\DependencyInjection\ChildDefinition')) {
-                    // Symfony >= 3.3
-                    $container
-                        ->setDefinition($id, new ChildDefinition('lightsaml.party.idp_entity_descriptor_store.file'))
-                        ->replaceArgument(0, $file);
-                } else {
-                    // Symfony < 3.3
-                    $container
-                        ->setDefinition($id, new DefinitionDecorator('lightsaml.party.idp_entity_descriptor_store.file'))
-                        ->replaceArgument(0, $file);
-                }
+                $container
+                    ->setDefinition($id, new ChildDefinition('lightsaml.party.idp_entity_descriptor_store.file'))
+                    ->replaceArgument(0, $file);
 
                 $store->addMethodCall('add', [new Reference($id)]);
             }
         }
     }
 
-    private function configureStore(ContainerBuilder $container, array $config)
+    private function configureStore(ContainerBuilder $container, array $config): void
     {
         if (isset($config['store']['request'])) {
             $container->setAlias('lightsaml.store.request', $config['store']['request']);
@@ -184,25 +178,6 @@ class LightSamlSymfonyBridgeExtension extends Extension
         }
         if (isset($config['store']['sso_state'])) {
             $container->setAlias('lightsaml.store.sso_state', $config['store']['sso_state']);
-        }
-    }
-
-    /**
-     * @param Definition $definition
-     * @param string     $classOrReference
-     * @param string     $method
-     */
-    private function setFactoryCompatibleWay(Definition $definition, $classOrReference, $method)
-    {
-        if (method_exists($definition, 'setFactory')) {
-            $definition->setFactory([$classOrReference, $method]);
-        } else {
-            if ($classOrReference instanceof Reference) {
-                $definition->setFactoryService((string) $classOrReference);
-            } else {
-                $definition->setFactoryClass($classOrReference);
-            }
-            $definition->setFactoryMethod($method);
         }
     }
 }
