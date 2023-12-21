@@ -20,8 +20,8 @@
     },
     "require": {
         "php": ">=7.4",
-        "symfony/framework-bundle": "^5.0|^6.0",
-        "symfony/dependency-injection": "^5.0|^6.0",
+        "symfony/framework-bundle": "^5.4|^6.4|^7.0",
+        "symfony/dependency-injection": "^5.4|^6.4|^7.0",
         "symfony/yaml": "^5.0|^6.0",
         "litesaml/lightsaml": "^4.0"
     },
