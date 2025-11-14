@@ -1,15 +1,17 @@
 {
-    "name": "lightsaml/symfony-bridge",
+    "name": "odandb/lightsaml-symfony-bridge",
     "license": "MIT",
     "type": "symfony-bundle",
-    "description": "Light SAML Symfony bridge bundle",
+    "description": "Upgrade of Light SAML Symfony bridge bundle for last Symfony versions",
     "homepage": "http://www.lightsaml.com",
     "authors": [
         {
-            "name": "Milos Tomic",
-            "email": "tmilos@gmail.com",
-            "homepage": "http://github.com/tmilos",
-            "role": "Developer"
+            "name": "Mathieu Girard",
+            "email": "mathieu.girard@odandb.com"
+        },
+        {
+            "name": "OD&B",
+            "homepage": "https://www.odandb.com/"
         }
     ],
     "autoload": {
